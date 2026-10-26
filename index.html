@@ -1,1024 +1,764 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GANGSTAFOLIO | Professional Video Editor Portfolio Engine</title>
+    <title>GANGSTAFOLIO — Ultra Video Editor Portfolio Studio</title>
     
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Curated Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;600&family=Montserrat:wght@400;600;800;900&family=Outfit:wght@300;500;700;900&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@400;600;700&family=Syne:wght@500;700;800&family=Urbanist:wght@300;600;800&family=Bebas+Neue&family=Cinzel+Decorative:wght@700&family=Fira+Code:wght@400;600&family=Kanit:wght@500;700;900&family=Lora:ital,wght@0,500;1,400&family=Oswald:wght@500;700&family=Poppins:wght@400;600;800&family=Rajdhani:wght@600;700&family=Righteous&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
-
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        studioDark: '#09090b',
-                        studioCard: '#18181b',
-                        studioBorder: 'rgba(255, 255, 255, 0.08)',
-                        accentWhite: '#ffffff',
+                        dark: {
+                            900: '#09090b',
+                            800: '#121216',
+                            700: '#18181b',
+                            600: '#27272a',
+                            500: '#3f3f46'
+                        }
                     }
                 }
             }
         }
     </script>
 
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts Ecosystem (20 Professional Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Syne:wght@500;700;800&family=Space+Grotesk:wght@400;600;700&family=Cinzel:wght@500;700&family=Oswald:wght@500;700&family=Raleway:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=Bebas+Neue&family=Unbounded:wght@400;600;700&family=Cabinet+Grotesk&family=Work+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&family=JetBrains+Mono:wght@400;600&family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        // Global Firebase handles exposed to window
+        window.firebaseModules = { initializeApp, getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getStorage, ref, uploadBytes, getDownloadURL };
+    </script>
+
     <style>
-        :root {
-            --app-font: 'Inter', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-        }
         body {
-            font-family: var(--app-font);
+            font-family: 'Inter', sans-serif;
             background-color: #09090b;
             color: #f4f4f5;
+            overflow-x: hidden;
         }
-
-        .glass-panel {
-            background: rgba(24, 24, 27, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        .glass-card {
+            background: rgba(24, 24, 27, 0.7);
+            backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .glass-panel-hover {
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .glass-panel-hover:hover {
-            background: rgba(39, 39, 42, 0.85);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        .glass-nav {
-            background: rgba(9, 9, 11, 0.9);
-            backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-input {
-            background: rgba(255, 255, 255, 0.04);
+        .glass-panel {
+            background: rgba(18, 18, 22, 0.85);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
-        .glass-input:focus {
-            outline: none;
-            border-color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        /* DP Shapes */
-        .dp-circle { border-radius: 9999px; }
-        .dp-squircle { border-radius: 1.75rem; }
-        .dp-hexagon { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
-
-        /* Welcome Intro Text */
-        .welcome-char {
-            display: inline-block;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: charAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            filter: blur(6px);
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        }
-        @keyframes charAppear {
-            to { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #09090b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3f3f46;
         }
     </style>
 </head>
-<body class="min-h-screen overflow-x-hidden text-zinc-100 selection:bg-zinc-700 selection:text-white">
+<body class="bg-dark-900 text-zinc-100 min-h-screen flex flex-col selection:bg-zinc-700 selection:text-white">
 
-    <!-- INTRO OVERLAY (Welcome Text Only) -->
-    <div id="intro-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#09090b] transition-opacity duration-700">
-        <h1 id="welcome-text" class="text-5xl sm:text-7xl font-bold tracking-widest text-white uppercase select-none">
-            <!-- WELCOME -->
+    <!-- INTRO REVEAL OVERLAY -->
+    <div id="introOverlay" class="fixed inset-0 z-50 bg-[#09090b] flex items-center justify-center transition-opacity duration-1000">
+        <h1 class="text-5xl md:text-8xl font-black tracking-widest text-white uppercase" style="font-family: 'Helvetica', 'Inter', sans-serif;">
+            WELCOME
         </h1>
     </div>
 
-    <!-- MAIN APP CONTAINER -->
-    <div class="relative z-10 flex flex-col min-h-screen">
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-40 w-full glass-card border-b border-zinc-800/80 px-4 lg:px-12 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-black text-xl text-white tracking-wider shadow-lg">
+                G
+            </div>
+            <div>
+                <span id="navBrandName" class="text-lg font-bold tracking-wider uppercase text-white">GANGSTAFOLIO</span>
+                <span class="block text-[10px] text-zinc-400 tracking-widest font-medium uppercase">PRO VIDEO EDITOR STUDIO</span>
+            </div>
+        </div>
 
-        <!-- HEADER & NAVBAR -->
-        <header class="sticky top-0 left-0 w-full z-40 glass-nav transition-all">
-            <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
-                
-                <!-- Brand Title -->
-                <a href="#" class="flex items-center gap-3 group">
-                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center font-black text-lg text-black shadow-md">
-                        <i data-lucide="zap" class="w-5 h-5 text-black"></i>
-                    </div>
-                    <div>
-                        <span id="editor-brand-name" class="text-xl font-black tracking-widest text-white uppercase">GANGSTA<span class="text-zinc-400">FOLIO</span></span>
-                        <span class="block text-[9px] text-zinc-400 tracking-[0.25em] font-medium uppercase">Pro Editor Portfolio Engine</span>
-                    </div>
-                </a>
+        <div class="flex items-center space-x-3">
+            <!-- Font Selector -->
+            <div class="hidden md:flex items-center space-x-2 bg-dark-800 border border-zinc-700/60 rounded-xl px-3 py-1.5">
+                <i class="fa-solid fa-font text-xs text-zinc-400"></i>
+                <select id="fontSelector" onchange="changeGlobalFont(this.value)" class="bg-transparent text-xs text-zinc-200 focus:outline-none cursor-pointer">
+                    <option value="'Inter', sans-serif" class="bg-dark-800">Inter (Default)</option>
+                    <option value="'Poppins', sans-serif" class="bg-dark-800">Poppins</option>
+                    <option value="'Montserrat', sans-serif" class="bg-dark-800">Montserrat</option>
+                    <option value="'Roboto', sans-serif" class="bg-dark-800">Roboto</option>
+                    <option value="'Playfair Display', serif" class="bg-dark-800">Playfair Display</option>
+                    <option value="'Syne', sans-serif" class="bg-dark-800">Syne</option>
+                    <option value="'Space Grotesk', sans-serif" class="bg-dark-800">Space Grotesk</option>
+                    <option value="'Cinzel', serif" class="bg-dark-800">Cinzel</option>
+                    <option value="'Oswald', sans-serif" class="bg-dark-800">Oswald</option>
+                    <option value="'Raleway', sans-serif" class="bg-dark-800">Raleway</option>
+                    <option value="'Plus Jakarta Sans', sans-serif" class="bg-dark-800">Jakarta Sans</option>
+                    <option value="'Outfit', sans-serif" class="bg-dark-800">Outfit</option>
+                    <option value="'DM Sans', sans-serif" class="bg-dark-800">DM Sans</option>
+                    <option value="'Bebas Neue', sans-serif" class="bg-dark-800">Bebas Neue</option>
+                    <option value="'Unbounded', cursive" class="bg-dark-800">Unbounded</option>
+                    <option value="'Cabinet Grotesk', sans-serif" class="bg-dark-800">Cabinet Grotesk</option>
+                    <option value="'Work Sans', sans-serif" class="bg-dark-800">Work Sans</option>
+                    <option value="'Fira Code', monospace" class="bg-dark-800">Fira Code</option>
+                    <option value="'JetBrains Mono', monospace" class="bg-dark-800">JetBrains Mono</option>
+                    <option value="'Archivo', sans-serif" class="bg-dark-800">Archivo</option>
+                </select>
+            </div>
 
-                <!-- Controls Bar -->
-                <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Studio Audio Toggle -->
+            <button onclick="toggleAudioPlayer()" id="audioToggleBtn" class="flex items-center space-x-2 bg-dark-800 hover:bg-zinc-700 border border-zinc-700/80 px-3 py-1.5 rounded-xl text-xs font-medium transition">
+                <i class="fa-solid fa-music text-zinc-400" id="audioIcon"></i>
+                <span id="audioLabel">Studio Audio</span>
+            </button>
+
+            <!-- Editor vs Client Mode Toggle -->
+            <button onclick="toggleClientMode()" id="modeToggleBtn" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-eye"></i>
+                <span id="modeToggleText">Preview Client View</span>
+            </button>
+
+            <!-- Add Content Button (Editor Only) -->
+            <button onclick="openAddModal()" id="addContentBtn" class="bg-white hover:bg-zinc-200 text-zinc-900 px-4 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition shadow-md flex items-center space-x-2">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>Add Work</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- HIDDEN AUDIO ELEMENT -->
+    <audio id="bgAudio" loop></audio>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-8 space-y-12">
+        
+        <!-- PROFILE & HERO SECTION -->
+        <section class="glass-card rounded-3xl p-6 lg:p-10 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 border border-zinc-800">
+            <div class="absolute -right-20 -top-20 w-80 h-80 bg-zinc-800/30 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+                <!-- DP Container -->
+                <div class="relative group">
+                    <div id="dpContainer" class="w-32 h-32 lg:w-36 lg:h-36 rounded-2xl overflow-hidden border-2 border-zinc-700 shadow-2xl bg-dark-800 flex items-center justify-center">
+                        <img id="profileDpImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80" alt="DP" class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <!-- Bio Details -->
+                <div class="space-y-2">
+                    <div class="inline-flex items-center space-x-2 bg-dark-800 border border-zinc-700 px-3 py-1 rounded-full">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="profileBadge" class="text-[11px] font-semibold tracking-wider uppercase text-zinc-300">AVAILABLE FOR FREELANCE & CLIENTS</span>
+                    </div>
+                    <h1 id="profileName" class="text-3xl lg:text-5xl font-extrabold text-white tracking-tight">KARRTIK</h1>
+                    <p id="profileTagline" class="text-zinc-400 text-sm lg:text-base max-w-xl font-medium">Elite Video Editor & Colorist crafting cinematic visual stories, high-retention reels & immersive soundscapes.</p>
                     
-                    <!-- Font Selector (Builder Only) -->
-                    <div class="builder-only hidden md:flex items-center gap-2 glass-panel px-3 py-1.5 rounded-xl border border-white/10">
-                        <i data-lucide="type" class="w-4 h-4 text-zinc-400"></i>
-                        <select id="font-selector" class="bg-transparent text-xs text-zinc-200 focus:outline-none cursor-pointer">
-                            <option value="Inter" selected class="bg-zinc-900">Inter (System Classic)</option>
-                            <option value="Space Grotesk" class="bg-zinc-900">Space Grotesk (Modern)</option>
-                            <option value="Outfit" class="bg-zinc-900">Outfit (Clean Sans)</option>
-                            <option value="Bebas Neue" class="bg-zinc-900">Bebas Neue (Cinematic Display)</option>
-                            <option value="Syne" class="bg-zinc-900">Syne (Avant-Garde)</option>
-                            <option value="JetBrains Mono" class="bg-zinc-900">JetBrains Mono (Technical)</option>
-                            <option value="Montserrat" class="bg-zinc-900">Montserrat (Bold Studio)</option>
-                            <option value="Kanit" class="bg-zinc-900">Kanit (Punchy)</option>
-                            <option value="Oswald" class="bg-zinc-900">Oswald (Tall Condensed)</option>
-                            <option value="Plus Jakarta Sans" class="bg-zinc-900">Plus Jakarta Sans</option>
-                            <option value="Cinzel" class="bg-zinc-900">Cinzel (Luxury Serif)</option>
-                            <option value="Playfair Display" class="bg-zinc-900">Playfair Display</option>
-                            <option value="Urbanist" class="bg-zinc-900">Urbanist (Sleek)</option>
-                            <option value="Poppins" class="bg-zinc-900">Poppins (Minimal)</option>
-                            <option value="Rajdhani" class="bg-zinc-900">Rajdhani (Sci-Fi / VFX)</option>
-                        </select>
-                    </div>
-
-                    <!-- Audio Player Control -->
-                    <button id="toggle-audio-player" title="Studio Ambient Player" class="px-3 py-2 rounded-xl glass-panel text-xs text-zinc-300 hover:text-white flex items-center gap-2 border border-white/10 hover:border-white/30 transition-all">
-                        <i data-lucide="disc" class="w-4 h-4 text-zinc-400"></i>
-                        <span class="hidden lg:inline text-[11px] font-mono">Audio Track</span>
-                    </button>
-
-                    <!-- Edit Profile Button (Editor Only) -->
-                    <button id="open-profile-btn" class="builder-only px-3.5 py-2 rounded-xl glass-panel text-xs font-semibold text-white hover:bg-white/10 flex items-center gap-2 border border-white/20 transition-all">
-                        <i data-lucide="user-cog" class="w-4 h-4"></i>
-                        <span class="hidden sm:inline">Edit Profile</span>
-                    </button>
-
-                    <!-- Share Client Link (Editor Only) -->
-                    <button id="share-client-link-btn" title="Generate Secure Client Link" class="builder-only px-3.5 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-xs font-semibold flex items-center gap-2 border border-emerald-500/40 transition-all">
-                        <i data-lucide="share-2" class="w-4 h-4"></i>
-                        <span class="hidden sm:inline">Client Link</span>
-                    </button>
-
-                    <!-- Client View Switcher Toggle -->
-                    <button id="toggle-client-view" class="px-3 py-2 rounded-xl glass-panel text-xs font-semibold text-zinc-200 hover:text-white flex items-center gap-2 border border-white/20 hover:border-white/40 transition-all bg-white/5">
-                        <i data-lucide="eye" class="w-4 h-4"></i>
-                        <span id="client-view-text" class="hidden sm:inline font-bold">Preview Client View</span>
-                    </button>
-
-                    <!-- Add Video / Content -->
-                    <button id="open-builder-btn" class="builder-only px-4 py-2 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-xs tracking-wider uppercase transition-all flex items-center gap-2 shadow-lg shadow-white/5">
-                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                        <span class="hidden sm:inline">Add Work</span>
-                    </button>
-
-                    <!-- Reset Data -->
-                    <button id="reset-data-btn" title="Reset Portfolio Data" class="builder-only p-2.5 rounded-xl glass-panel text-zinc-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 transition-all">
-                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                    </button>
-
-                </div>
-            </div>
-        </header>
-
-        <!-- CLIENT MODE BANNER -->
-        <div id="client-banner" class="hidden bg-emerald-500/10 border-b border-emerald-500/30 py-2.5 px-6 text-center text-xs font-medium text-emerald-300 flex items-center justify-center gap-3">
-            <i data-lucide="lock" class="w-4 h-4"></i>
-            <span><strong>Client View Mode:</strong> Portfolio is locked & secure. You can review works, submit feedback/revisions & request edits!</span>
-            <button id="exit-client-view-btn" class="underline text-white ml-2 font-bold hover:text-emerald-200">Exit To Editor Mode</button>
-        </div>
-
-        <!-- AMBIENT AUDIO PLAYER BAR -->
-        <div id="audio-player-bar" class="hidden glass-panel border-b border-white/10 py-3 px-6 transition-all">
-            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-                <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <button id="audio-play-pause-btn" class="w-9 h-9 rounded-xl bg-white text-black flex items-center justify-center font-bold">
-                        <i data-lucide="play" id="audio-play-icon" class="w-4 h-4"></i>
-                    </button>
-                    <div>
-                        <span id="audio-track-title" class="font-bold text-white block">Studio Cinematic Soundtrack</span>
-                        <span id="audio-track-status" class="text-[10px] text-zinc-400 font-mono">Status: Paused</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                    <label class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-medium text-[11px] cursor-pointer flex items-center gap-2 border border-white/10">
-                        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                        <span>Load Custom Track (.mp3)</span>
-                        <input type="file" id="local-audio-input" accept="audio/*" class="hidden">
-                    </label>
-                    <input type="range" id="audio-volume" min="0" max="1" step="0.05" value="0.5" class="w-24 accent-white cursor-pointer">
-                </div>
-            </div>
-        </div>
-
-        <!-- HERO & EDITOR PROFILE SECTION -->
-        <section class="py-12 px-6 max-w-7xl mx-auto w-full">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-                
-                <!-- DP / Profile Photo Customizer -->
-                <div class="lg:col-span-4 flex flex-col items-center">
-                    <div class="relative group">
-                        
-                        <div id="dp-glow-container" class="relative p-2 transition-all">
-                            <div id="dp-frame" class="w-44 h-44 md:w-56 md:h-56 dp-circle overflow-hidden bg-zinc-900 border-2 border-white/20 relative shadow-2xl">
-                                <img id="dp-image" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Video Editor Profile" class="w-full h-full object-cover">
-                                
-                                <label for="dp-file-input" class="builder-only absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white gap-2 text-center p-2">
-                                    <i data-lucide="camera" class="w-8 h-8 text-white"></i>
-                                    <span class="text-xs font-semibold">Change Photo</span>
-                                </label>
-                                <input type="file" id="dp-file-input" accept="image/*" class="hidden">
-                            </div>
-                        </div>
-
-                        <span id="editor-badge" class="absolute -bottom-1 right-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white text-black shadow-lg">
-                            Pro Video Editor
-                        </span>
-                    </div>
-
-                    <!-- Frame Shape Options (Builder Only) -->
-                    <div class="builder-only mt-5 flex items-center justify-center gap-2 glass-panel p-2 rounded-2xl border border-white/10">
-                        <span class="text-[10px] text-zinc-400 uppercase font-bold px-2">Frame Shape:</span>
-                        <button class="dp-shape-btn p-1.5 rounded-lg bg-white/20 text-white" data-shape="circle" title="Circle"><i data-lucide="circle" class="w-3.5 h-3.5"></i></button>
-                        <button class="dp-shape-btn p-1.5 rounded-lg text-zinc-400 hover:text-white" data-shape="squircle" title="Squircle"><i data-lucide="square" class="w-3.5 h-3.5"></i></button>
-                        <button class="dp-shape-btn p-1.5 rounded-lg text-zinc-400 hover:text-white" data-shape="hexagon" title="Hexagon"><i data-lucide="hexagon" class="w-3.5 h-3.5"></i></button>
-                    </div>
-                </div>
-
-                <!-- Bio & Details -->
-                <div class="lg:col-span-8 space-y-5 text-center lg:text-left">
-                    <div id="availability-badge-container" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-panel border border-white/15 text-zinc-300 text-xs font-semibold tracking-wider uppercase">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="display-availability">Available for Freelance & Remote Projects</span>
-                    </div>
-
-                    <div>
-                        <h1 id="hero-editor-name" class="text-4xl sm:text-6xl font-black text-white uppercase tracking-tight">
-                            KARRTIK <span class="text-zinc-400">CREATES</span>
-                        </h1>
-                        <p id="hero-title-sub" class="text-xs sm:text-sm font-mono text-zinc-400 tracking-widest uppercase mt-1">
-                            Cinematic Commercials • Short Form Reels • Motion Graphics • Colorist
-                        </p>
-                    </div>
-
-                    <p id="hero-bio" class="text-zinc-300 text-sm sm:text-base font-light max-w-2xl leading-relaxed">
-                        Creative Video Editor & Visual Storyteller. Specializing in high-pacing YouTube edits, commercial brand ads, cinematic color grading, and viral short-form content.
-                    </p>
-
                     <!-- Software Badges -->
-                    <div id="software-tags" class="flex flex-wrap justify-center lg:justify-start gap-2 pt-1">
-                        <!-- Populated dynamically -->
-                    </div>
-
-                    <!-- Actions Bar -->
-                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-3">
-                        <a href="#contact-section" class="px-6 py-3.5 rounded-2xl bg-white hover:bg-zinc-200 text-black font-bold text-xs tracking-wider uppercase transition-all flex items-center gap-2 shadow-lg shadow-white/5">
-                            <i data-lucide="mail" class="w-4 h-4"></i>
-                            <span>Send Project Brief</span>
-                        </a>
-                        
-                        <!-- DIRECT WHATSAPP BUTTON -->
-                        <a id="whatsapp-link" href="https://wa.me/919999999999?text=Hi%2C%20I%20saw%20your%20GANGSTAFOLIO%20portfolio%20and%20want%20to%20hire%20you%20for%20a%20video%20editing%20project!" target="_blank" class="px-6 py-3.5 rounded-2xl glass-panel text-emerald-400 hover:text-emerald-300 font-bold text-xs tracking-wider uppercase border border-emerald-500/30 hover:border-emerald-400 transition-all flex items-center gap-2 bg-emerald-500/10">
-                            <i data-lucide="message-circle" class="w-4.5 h-4.5 text-emerald-400"></i>
-                            <span>Direct WhatsApp Chat</span>
-                        </a>
+                    <div id="softwareBadgesList" class="flex flex-wrap justify-center md:justify-start gap-2 pt-2">
+                        <span class="bg-dark-800 border border-zinc-700 text-zinc-300 px-2.5 py-1 rounded-lg text-[11px] font-semibold">Premiere Pro</span>
+                        <span class="bg-dark-800 border border-zinc-700 text-zinc-300 px-2.5 py-1 rounded-lg text-[11px] font-semibold">After Effects</span>
+                        <span class="bg-dark-800 border border-zinc-700 text-zinc-300 px-2.5 py-1 rounded-lg text-[11px] font-semibold">DaVinci Resolve</span>
+                        <span class="bg-dark-800 border border-zinc-700 text-zinc-300 px-2.5 py-1 rounded-lg text-[11px] font-semibold">Photoshop</span>
                     </div>
                 </div>
+            </div>
 
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                <button onclick="openEditProfileModal()" id="editProfileBtn" class="w-full sm:w-auto bg-dark-800 hover:bg-zinc-700 border border-zinc-700 text-white px-5 py-3 rounded-xl text-xs font-bold tracking-wider uppercase transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-user-pen"></i>
+                    <span>Edit Profile</span>
+                </button>
+                <button onclick="openShareModal()" class="w-full sm:w-auto bg-dark-800 hover:bg-zinc-700 border border-zinc-700 text-white px-5 py-3 rounded-xl text-xs font-bold tracking-wider uppercase transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span>Share Client Link</span>
+                </button>
+                <button onclick="openWhatsAppChat()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl text-xs font-bold tracking-wider uppercase transition shadow-lg flex items-center justify-center space-x-2">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>WhatsApp Chat</span>
+                </button>
             </div>
         </section>
 
-        <!-- PORTFOLIO SHOWCASE SECTION -->
-        <section id="portfolio-showcase" class="py-12 px-6 max-w-7xl mx-auto w-full flex-1">
+        <!-- PORTFOLIO FILTER TABS -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+            <div id="filterTabs" class="flex flex-wrap items-center gap-2">
+                <button onclick="filterCategory('all')" class="category-btn active px-4 py-2 rounded-xl text-xs font-bold bg-white text-zinc-900 transition shadow">All Works</button>
+                <button onclick="filterCategory('showreel')" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 hover:text-white transition">Showreels</button>
+                <button onclick="filterCategory('shortform')" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 hover:text-white transition">Shorts / Reels</button>
+                <button onclick="filterCategory('commercial')" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 hover:text-white transition">Commercials</button>
+                <button onclick="filterCategory('colorgrading')" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 hover:text-white transition">Color Grading</button>
+                <button onclick="filterCategory('script')" class="category-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 hover:text-white transition">Scripts & Docs</button>
+            </div>
             
-            <!-- Category Filters -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-4 border-b border-white/10">
-                <div class="flex flex-wrap items-center gap-2" id="category-filter-bar">
-                    <button class="cat-filter-btn active px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-white text-black" data-category="all">All Edits</button>
-                    <button class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider glass-panel text-zinc-400 hover:text-white" data-category="showreel">Showreels & Promos</button>
-                    <button class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider glass-panel text-zinc-400 hover:text-white" data-category="short-form">Reels & Shorts (9:16)</button>
-                    <button class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider glass-panel text-zinc-400 hover:text-white" data-category="commercial">Commercial Ads</button>
-                    <button class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider glass-panel text-zinc-400 hover:text-white" data-category="color-grade">Color Grading</button>
-                    <button class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider glass-panel text-zinc-400 hover:text-white" data-category="vfx">VFX & Motion Graphics</button>
-                </div>
+            <div class="text-xs text-zinc-400 font-medium">
+                Showing <span id="itemCount" class="text-white font-bold">0</span> projects
+            </div>
+        </div>
 
-                <div class="flex items-center gap-3 text-xs text-zinc-400">
-                    <span id="items-counter" class="px-3 py-1 rounded-full glass-panel text-white font-mono font-bold">0 Works</span>
-                </div>
+        <!-- PORTFOLIO GRID -->
+        <div id="portfolioGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic Portfolio Cards Will Be Rendered Here -->
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div id="emptyState" class="hidden flex flex-col items-center justify-center py-20 text-center space-y-4">
+            <div class="w-16 h-16 rounded-2xl bg-dark-800 border border-zinc-700 flex items-center justify-center text-zinc-500 text-2xl">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white">No Portfolio Works Yet</h3>
+            <p class="text-xs text-zinc-400 max-w-sm">Click "Add Work" to upload your videos, reels, color grades, or scripts and build your professional showcase.</p>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-zinc-800 bg-dark-900 py-8 px-6 text-center text-xs text-zinc-400">
+        <p>© 2026 GANGSTAFOLIO Studio. Built for Elite Video Editors & Creators.</p>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. ADD CONTENT MODAL -->
+    <div id="addContentModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-panel w-full max-w-xl rounded-3xl p-6 md:p-8 space-y-6 border border-zinc-700 shadow-2xl relative my-8">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-film text-zinc-400"></i>
+                    <span>Add New Portfolio Work</span>
+                </h3>
+                <button onclick="closeAddModal()" class="text-zinc-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
             </div>
 
-            <!-- Video Grid -->
-            <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Javascript populated video cards -->
-            </div>
-        </section>
-
-        <!-- CLIENT CONTACT & INQUIRY SECTION -->
-        <section id="contact-section" class="py-16 px-6 max-w-4xl mx-auto w-full">
-            <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-white/10 text-center space-y-6">
-                <div class="w-12 h-12 rounded-2xl bg-white/10 text-white border border-white/20 flex items-center justify-center mx-auto">
-                    <i data-lucide="send" class="w-6 h-6"></i>
+            <form id="addContentForm" onsubmit="handleSaveContent(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Project Title</label>
+                    <input type="text" id="workTitle" required placeholder="e.g. Cyberpunk Cinematic Trailer" class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500">
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">Send Editing Project Brief</h2>
-                <p class="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto">
-                    Have a video project, brand commercial, YouTube series, or short-form content campaign? Send your details directly!
-                </p>
 
-                <form id="client-contact-form" class="space-y-4 max-w-xl mx-auto text-left">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input type="text" id="client-name" required placeholder="Your Name / Channel / Agency" class="w-full px-4 py-3 rounded-xl glass-input text-xs">
-                        <input type="email" id="client-email" required placeholder="Your Email Address" class="w-full px-4 py-3 rounded-xl glass-input text-xs">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Category</label>
+                        <select id="workCategory" class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500">
+                            <option value="showreel">Showreel</option>
+                            <option value="shortform">Shorts / Reels (9:16)</option>
+                            <option value="commercial">Commercial</option>
+                            <option value="colorgrading">Color Grading</option>
+                            <option value="script">Script / Doc</option>
+                        </select>
                     </div>
-                    <select id="client-project-type" class="w-full px-4 py-3 rounded-xl glass-input text-xs bg-zinc-900">
-                        <option value="youtube">YouTube Long-Form Video Edit</option>
-                        <option value="reels">Short-Form Reels / Shorts Package</option>
-                        <option value="commercial">Commercial Brand Video / Ad</option>
-                        <option value="color">Color Grading Project</option>
-                        <option value="vfx">Motion Graphics / VFX Integration</option>
-                    </select>
-                    <textarea id="client-msg" rows="3" required placeholder="Project details (e.g., Raw Footage length, Timeline budget, Reference Links)..." class="w-full px-4 py-3 rounded-xl glass-input text-xs"></textarea>
-                    
-                    <button type="submit" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2">
-                        <i data-lucide="send" class="w-4 h-4"></i>
-                        <span>Submit Project Brief</span>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Client Name (Optional)</label>
+                        <input type="text" id="workClient" placeholder="e.g. Netflix / Nike" class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Software / Tools Used</label>
+                    <input type="text" id="workSoftware" placeholder="e.g. Premiere Pro, After Effects, DaVinci" class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Upload Media File (Video / Image / Script / Audio)</label>
+                    <input type="file" id="workFile" accept="video/*,image/*,.pdf,.txt,.mp3,.wav" class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-zinc-700 file:text-white hover:file:bg-zinc-600 cursor-pointer">
+                    <p class="text-[11px] text-zinc-400 mt-1">Or paste external URL below if hosted online (YouTube/Vimeo/Direct MP4)</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">External Media URL (Optional)</label>
+                    <input type="url" id="workUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Project Description / Brief</label>
+                    <textarea id="workDesc" rows="3" placeholder="Describe the edit style, sound design, and color grading applied..." class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500 resize-none"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-zinc-800">
+                    <button type="button" onclick="closeAddModal()" class="bg-dark-800 hover:bg-zinc-700 text-zinc-300 px-5 py-2.5 rounded-xl text-xs font-bold uppercase transition">Cancel</button>
+                    <button type="submit" id="saveWorkBtn" class="bg-white hover:bg-zinc-200 text-zinc-900 px-6 py-2.5 rounded-xl text-xs font-bold uppercase transition shadow-lg flex items-center space-x-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Upload & Save to Cloud</span>
                     </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- FOOTER -->
-        <footer class="border-t border-white/10 py-8 px-6 text-center text-xs text-zinc-500 bg-[#09090b]">
-            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p>© 2026 GANGSTAFOLIO - Video Editor Engine</p>
-                <p class="text-zinc-400 font-mono text-[11px]">Designed for Professional Video Editors & Creators</p>
-            </div>
-        </footer>
-
-    </div>
-
-    <!-- MODAL 1: EDIT PROFILE MODAL -->
-    <div id="profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-        <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-white/20 max-h-[90vh] overflow-y-auto space-y-6">
-            
-            <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="user-cog" class="w-5 h-5 text-white"></i>
-                    <h3 class="text-lg font-bold text-white">Edit Your Profile</h3>
                 </div>
-                <button id="close-profile-btn" class="p-2 text-zinc-400 hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-
-            <form id="profile-form" class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs font-semibold uppercase text-zinc-400">Editor / Studio Name</label>
-                        <input type="text" id="prof-name" required placeholder="e.g. KARRTIK CREATES" class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1">
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold uppercase text-zinc-400">Badge Tag</label>
-                        <input type="text" id="prof-badge" required placeholder="e.g. Pro Video Editor" class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Subtitle / Specialty Tagline</label>
-                    <input type="text" id="prof-subtitle" required placeholder="e.g. Cinematic Commercials • Reels • Motion Graphics" class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1">
-                </div>
-
-                <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Full Bio</label>
-                    <textarea id="prof-bio" rows="3" required placeholder="Describe your experience, pacing style, and editing skills..." class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1"></textarea>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs font-semibold uppercase text-zinc-400">WhatsApp Number (With Country Code)</label>
-                        <input type="text" id="prof-whatsapp" required placeholder="e.g. 919999999999" class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1 font-mono">
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold uppercase text-zinc-400">Availability Status</label>
-                        <input type="text" id="prof-availability" required placeholder="Available for Freelance & Remote Projects" class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Software Badges (Comma Separated)</label>
-                    <input type="text" id="prof-software" placeholder="Premiere Pro, After Effects, DaVinci Resolve, Blender 3D" class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1">
-                </div>
-
-                <button type="submit" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2">
-                    <i data-lucide="check" class="w-4 h-4"></i>
-                    <span>Save Profile Changes</span>
-                </button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 2: ADD VIDEO WORK -->
-    <div id="builder-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-        <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-white/20 max-h-[90vh] overflow-y-auto space-y-6">
-            
-            <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="video" class="w-5 h-5 text-white"></i>
-                    <h3 class="text-lg font-bold text-white">Add Video Work / Project</h3>
-                </div>
-                <button id="close-builder-btn" class="p-2 text-zinc-400 hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+    <!-- 2. EDIT PROFILE MODAL -->
+    <div id="editProfileModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 md:p-8 space-y-6 border border-zinc-700 shadow-2xl relative my-8">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-user-pen text-zinc-400"></i>
+                    <span>Edit Profile & Studio Details</span>
+                </h3>
+                <button onclick="closeEditProfileModal()" class="text-zinc-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
-            <form id="portfolio-form" class="space-y-4">
+            <form id="editProfileForm" onsubmit="handleSaveProfile(event)" class="space-y-4">
                 <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Project / Video Title</label>
-                    <input type="text" id="item-title" required placeholder="e.g. Cyberpunk Cinematic Reel 2026 / Nike Ad Edit" class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Studio / Creator Name</label>
+                    <input type="text" id="editName" required class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs font-semibold uppercase text-zinc-400">Category</label>
-                        <select id="item-category" class="w-full px-4 py-3 rounded-xl glass-input text-xs bg-zinc-900 mt-1">
-                            <option value="showreel">Showreel / Main Promo</option>
-                            <option value="short-form">Short-Form Reel / TikTok (9:16)</option>
-                            <option value="commercial">Commercial Ad / Brand Video</option>
-                            <option value="color-grade">Color Grading Project</option>
-                            <option value="vfx">VFX & Motion Graphics</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-semibold uppercase text-zinc-400">Aspect Ratio</label>
-                        <select id="item-aspect" class="w-full px-4 py-3 rounded-xl glass-input text-xs bg-zinc-900 mt-1">
-                            <option value="16:9">Horizontal 16:9 (Standard Video)</option>
-                            <option value="9:16">Vertical 9:16 (Reel / Short)</option>
-                            <option value="4:5">Portrait 4:5 (Instagram)</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Upload Video File (.mp4) OR Paste Embed Link (YouTube/Vimeo/Direct MP4)</label>
-                    <div class="flex flex-col sm:flex-row items-center gap-2 mt-1">
-                        <label class="w-full sm:w-auto px-4 py-3 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-bold cursor-pointer flex items-center justify-center gap-2">
-                            <i data-lucide="upload" class="w-4 h-4"></i>
-                            <span>Upload Video</span>
-                            <input type="file" id="item-file-input" accept="video/*,image/*" class="hidden">
-                        </label>
-                        <input type="text" id="item-url-input" placeholder="Or paste YouTube / MP4 Video URL" class="flex-1 w-full px-4 py-3 rounded-xl glass-input text-xs">
-                    </div>
-                    <p id="file-chosen-name" class="text-[11px] text-zinc-400 font-mono mt-1 italic"></p>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Tagline & Bio</label>
+                    <textarea id="editTagline" rows="2" required class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none resize-none"></textarea>
                 </div>
-
                 <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Software Used (Comma Separated)</label>
-                    <input type="text" id="item-software" placeholder="Premiere Pro, After Effects, DaVinci Resolve" class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Availability Status Badge</label>
+                    <input type="text" id="editBadge" required class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
                 </div>
-
                 <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Description & Production Breakdown</label>
-                    <textarea id="item-description" rows="3" placeholder="Explain the editing technique, pacing strategy, sound design, or color grade notes..." class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1"></textarea>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">WhatsApp Phone Number (with Country Code)</label>
+                    <input type="text" id="editWhatsapp" placeholder="e.g. 919876543210" required class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
                 </div>
-
-                <button type="submit" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-xs uppercase tracking-wider transition-all">
-                    Publish To Portfolio
-                </button>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Profile Photo (DP) File</label>
+                    <input type="file" id="editDpFile" accept="image/*" class="w-full bg-dark-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-zinc-700 file:text-white hover:file:bg-zinc-600 cursor-pointer">
+                </div>
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-zinc-800">
+                    <button type="button" onclick="closeEditProfileModal()" class="bg-dark-800 hover:bg-zinc-700 text-zinc-300 px-5 py-2.5 rounded-xl text-xs font-bold uppercase">Cancel</button>
+                    <button type="submit" id="saveProfileBtn" class="bg-white hover:bg-zinc-200 text-zinc-900 px-6 py-2.5 rounded-xl text-xs font-bold uppercase shadow-lg">Save Profile</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 3: CLIENT FEEDBACK / REVISION BRIEF MODAL -->
-    <div id="feedback-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-white/20 space-y-5">
-            <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="message-square" class="w-5 h-5 text-emerald-400"></i>
-                    <h3 class="text-lg font-bold text-white">Client Feedback & Change Brief</h3>
-                </div>
-                <button id="close-feedback-btn" class="p-2 text-zinc-400 hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+    <!-- 3. SHARE CLIENT LINK MODAL -->
+    <div id="shareModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-6 space-y-6 border border-zinc-700 shadow-2xl relative text-center">
+            <div class="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center mx-auto text-white text-xl">
+                <i class="fa-solid fa-link"></i>
             </div>
-
-            <p class="text-xs text-zinc-400">Project: <strong id="feedback-project-title" class="text-white"></strong></p>
-
-            <form id="feedback-form" class="space-y-4">
-                <input type="hidden" id="feedback-item-id">
-                <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Your Name / Agency</label>
-                    <input type="text" id="fb-client-name" required placeholder="e.g. Alex (Brand Producer)" class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1">
-                </div>
-
-                <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Rating (1 to 5 Stars)</label>
-                    <select id="fb-rating" class="w-full px-4 py-3 rounded-xl glass-input text-xs bg-zinc-900 mt-1">
-                        <option value="5">⭐⭐⭐⭐⭐ (5/5 Excellent)</option>
-                        <option value="4">⭐⭐⭐⭐ (4/5 Very Good)</option>
-                        <option value="3">⭐⭐⭐ (3/5 Needs Revision)</option>
-                        <option value="2">⭐⭐ (2/5 Major Changes Needed)</option>
-                        <option value="1">⭐ (1/5 Rework)</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-xs font-semibold uppercase text-zinc-400">Change Brief / Revision Notes</label>
-                    <textarea id="fb-notes" rows="4" required placeholder="Specify exact timestamps or edits to change (e.g., at 0:12 change soundtrack level, adjust color temperature)..." class="w-full px-4 py-3 rounded-xl glass-input text-xs mt-1"></textarea>
-                </div>
-
-                <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2">
-                    <i data-lucide="send" class="w-4 h-4"></i>
-                    <span>Submit Feedback To Editor</span>
-                </button>
-            </form>
+            <div class="space-y-2">
+                <h3 class="text-lg font-bold text-white">Client Showcase Link</h3>
+                <p class="text-xs text-zinc-400">Share this link with prospective clients. They can preview your work, leave star ratings, and submit revision briefs directly!</p>
+            </div>
+            <div class="flex items-center space-x-2 bg-dark-800 border border-zinc-700 p-2 rounded-xl">
+                <input type="text" id="shareUrlInput" readonly class="w-full bg-transparent text-xs text-zinc-300 px-2 focus:outline-none">
+                <button onclick="copyShareLink()" class="bg-white text-zinc-900 px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap hover:bg-zinc-200 transition">Copy</button>
+            </div>
+            <button onclick="closeShareModal()" class="w-full bg-dark-800 hover:bg-zinc-700 text-zinc-300 py-3 rounded-xl text-xs font-bold uppercase tracking-wider">Close</button>
         </div>
     </div>
 
-    <!-- INDEXED DB ENGINE & APPLICATION JAVASCRIPT -->
+    <!-- FIREBASE INITIALIZATION & APP LOGIC SCRIPT -->
     <script>
-        const DB_NAME = "GANGSTAFOLIO_DB";
-        const DB_VERSION = 1;
-        const STORE_NAME = "media_store";
-        let db = null;
-
-        function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
-                request.onupgradeneeded = (e) => {
-                    const database = e.target.result;
-                    if (!database.objectStoreNames.contains(STORE_NAME)) {
-                        database.createObjectStore(STORE_NAME);
-                    }
-                };
-                request.onsuccess = (e) => {
-                    db = e.target.result;
-                    resolve(db);
-                };
-                request.onerror = (e) => reject(e);
-            });
-        }
-
-        function saveMediaBlob(key, data) {
-            return new Promise((resolve, reject) => {
-                if (!db) return reject("DB not initialized");
-                const tx = db.transaction(STORE_NAME, "readwrite");
-                const store = tx.objectStore(STORE_NAME);
-                store.put(data, key);
-                tx.oncomplete = () => resolve();
-                tx.onerror = (e) => reject(e);
-            });
-        }
-
-        function deleteMediaBlob(key) {
-            if (!db) return;
-            const tx = db.transaction(STORE_NAME, "readwrite");
-            tx.objectStore(STORE_NAME).delete(key);
-        }
-
-        // App State
-        let isClientMode = false;
-        let ambientAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=ambient-piano-10786.mp3");
-        ambientAudio.loop = true;
-
-        let profileState = {
-            name: "KARRTIK CREATES",
-            badge: "Pro Video Editor",
-            subtitle: "Cinematic Commercials • Short Form Reels • Motion Graphics • Colorist",
-            bio: "Creative Video Editor & Visual Storyteller. Specializing in high-pacing YouTube edits, commercial brand ads, cinematic color grading, and viral short-form content.",
-            whatsapp: "919999999999",
-            availability: "Available for Freelance & Remote Projects",
-            software: ["Premiere Pro", "After Effects", "DaVinci Resolve", "Blender 3D"]
+        // ================= FIREBASE CONFIG =================
+        // REPLACE THE BELOW CONFIG OBJECT WITH YOUR FREE FIREBASE PROJECT CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyYOUR_API_KEY_HERE",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcde"
         };
 
-        let portfolioItems = [
-            {
-                id: "default-video-1",
-                title: "Cinematic Showreel 2026",
-                category: "showreel",
-                aspect: "16:9",
-                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-                software: "Premiere Pro, After Effects, DaVinci Resolve",
-                description: "High-energy commercial and narrative editing showreel featuring dynamic sound design and color grading.",
-                feedbacks: []
-            },
-            {
-                id: "default-video-2",
-                title: "Viral Short-Form Reel (9:16)",
-                category: "short-form",
-                aspect: "9:16",
-                url: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=600&q=80",
-                software: "Premiere Pro, CapCut Pro",
-                description: "Fast-paced vertical edit with animated captions, motion graphics hook, and sound effects.",
-                feedbacks: []
-            },
-            {
-                id: "default-video-3",
-                title: "Brand Commercial Color Grade",
-                category: "color-grade",
-                aspect: "16:9",
-                url: "https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80",
-                software: "DaVinci Resolve Studio",
-                description: "Film emulation look using custom node tree setup, skin tone balance, and teal-orange contrast.",
-                feedbacks: []
+        let app, db, storage, isFirebaseConnected = false;
+        let works = [];
+        let profileData = {
+            name: "KARRTIK",
+            tagline: "Elite Video Editor & Colorist crafting cinematic visual stories, high-retention reels & immersive soundscapes.",
+            badge: "AVAILABLE FOR FREELANCE & CLIENTS",
+            whatsapp: "919876543210",
+            dpUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"
+        };
+        let isClientMode = false;
+        let currentFilter = 'all';
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Intro Reveal Timeout
+            setTimeout(() => {
+                const intro = document.getElementById('introOverlay');
+                intro.style.opacity = '0';
+                setTimeout(() => intro.remove(), 1000);
+            }, 1200);
+
+            // Initialize Firebase if user configured keys
+            try {
+                if (window.firebaseModules && firebaseConfig.apiKey !== "AIzaSyYOUR_API_KEY_HERE") {
+                    const { initializeApp, getFirestore, getStorage } = window.firebaseModules;
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    storage = getStorage(app);
+                    isFirebaseConnected = true;
+                    await fetchCloudData();
+                } else {
+                    loadLocalFallback();
+                }
+            } catch (err) {
+                console.log("Firebase not configured or failed, running local mode:", err);
+                loadLocalFallback();
             }
-        ];
 
-        let activeCategory = "all";
-
-        document.addEventListener("DOMContentLoaded", async () => {
-            await initDB();
-            lucide.createIcons();
-            initIntroAnimation();
-            initApp();
-            renderProfile();
-            renderShowcase();
+            renderWorks();
+            updateProfileUI();
         });
 
-        function initIntroAnimation() {
-            const word = "GANGSTAFOLIO";
-            const container = document.getElementById("welcome-text");
-            const intro = document.getElementById("intro-screen");
+        // ================= DATA SYNC (FIREBASE / LOCALSTORAGE) =================
+        async function fetchCloudData() {
+            if (!isFirebaseConnected) return;
+            const { getDocs, collection } = window.firebaseModules;
+            try {
+                const querySnapshot = await getDocs(collection(db, "works"));
+                works = [];
+                querySnapshot.forEach((docSnap) => {
+                    works.push({ id: docSnap.id, ...docSnap.data() });
+                });
 
-            container.innerHTML = "";
-            word.split("").forEach((char, i) => {
-                const span = document.createElement("span");
-                span.textContent = char;
-                span.classList.add("welcome-char");
-                span.style.animationDelay = `${i * 0.08}s`;
-                container.appendChild(span);
-            });
-
-            setTimeout(() => {
-                intro.classList.add("opacity-0");
-                setTimeout(() => intro.style.display = "none", 700);
-            }, 1400);
+                const profileSnap = await getDocs(collection(db, "profile"));
+                profileSnap.forEach((docSnap) => {
+                    profileData = docSnap.data();
+                });
+            } catch (e) {
+                console.error("Error fetching cloud data:", e);
+                loadLocalFallback();
+            }
         }
 
-        function initApp() {
-            // Font Switcher
-            document.getElementById("font-selector").addEventListener("change", (e) => {
-                const font = e.target.value;
-                document.documentElement.style.setProperty('--app-font', `'${font}', sans-serif`);
-            });
+        function loadLocalFallback() {
+            const savedWorks = localStorage.getItem('gangstafolio_works');
+            if (savedWorks) works = JSON.parse(savedWorks);
+            const savedProfile = localStorage.getItem('gangstafolio_profile');
+            if (savedProfile) profileData = JSON.parse(savedProfile);
+        }
 
-            // DP Photo Upload
-            document.getElementById("dp-file-input").addEventListener("change", async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = async (evt) => {
-                        const base64 = evt.target.result;
-                        document.getElementById("dp-image").src = base64;
-                        await saveMediaBlob("profile_dp", base64);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+        function saveLocalFallback() {
+            localStorage.setItem('gangstafolio_works', JSON.stringify(works));
+            localStorage.setItem('gangstafolio_profile', JSON.stringify(profileData));
+        }
 
-            // Frame Shapes
-            document.querySelectorAll(".dp-shape-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const shape = btn.getAttribute("data-shape");
-                    const dpFrame = document.getElementById("dp-frame");
-                    dpFrame.className = `w-44 h-44 md:w-56 md:h-56 dp-${shape} overflow-hidden bg-zinc-900 border-2 border-white/20 relative shadow-2xl`;
-                });
-            });
+        // ================= RENDERING =================
+        function renderWorks() {
+            const grid = document.getElementById('portfolioGrid');
+            const emptyState = document.getElementById('emptyState');
+            grid.innerHTML = '';
 
-            // Audio Player
-            const audioBar = document.getElementById("audio-player-bar");
-            const audioPlayBtn = document.getElementById("audio-play-pause-btn");
-            const audioPlayIcon = document.getElementById("audio-play-icon");
-            const audioStatus = document.getElementById("audio-track-status");
+            const filtered = currentFilter === 'all' ? works : works.filter(w => w.category === currentFilter);
+            document.getElementById('itemCount').innerText = filtered.length;
 
-            document.getElementById("toggle-audio-player").addEventListener("click", () => {
-                audioBar.classList.toggle("hidden");
-            });
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
 
-            audioPlayBtn.addEventListener("click", () => {
-                if (ambientAudio.paused) {
-                    ambientAudio.play();
-                    audioStatus.textContent = "Status: Playing";
-                    audioPlayIcon.setAttribute("data-lucide", "pause");
-                } else {
-                    ambientAudio.pause();
-                    audioStatus.textContent = "Status: Paused";
-                    audioPlayIcon.setAttribute("data-lucide", "play");
-                }
-                lucide.createIcons();
-            });
-
-            document.getElementById("audio-volume").addEventListener("input", (e) => {
-                ambientAudio.volume = e.target.value;
-            });
-
-            document.getElementById("local-audio-input").addEventListener("change", (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const url = URL.createObjectURL(file);
-                    ambientAudio.src = url;
-                    ambientAudio.play();
-                    document.getElementById("audio-track-title").textContent = file.name;
-                    audioStatus.textContent = "Status: Playing";
-                    audioPlayIcon.setAttribute("data-lucide", "pause");
-                    lucide.createIcons();
-                }
-            });
-
-            // Client View Toggle
-            const toggleClientBtn = document.getElementById("toggle-client-view");
-            const exitClientBtn = document.getElementById("exit-client-view-btn");
-            const clientBanner = document.getElementById("client-banner");
-
-            const setClientMode = (mode) => {
-                isClientMode = mode;
-                document.querySelectorAll(".builder-only").forEach(el => {
-                    el.style.display = isClientMode ? "none" : "";
-                });
-                if (isClientMode) {
-                    clientBanner.classList.remove("hidden");
-                    document.getElementById("client-view-text").textContent = "Exit Client View";
-                } else {
-                    clientBanner.classList.add("hidden");
-                    document.getElementById("client-view-text").textContent = "Preview Client View";
-                }
-                renderShowcase();
-            };
-
-            toggleClientBtn.addEventListener("click", () => setClientMode(!isClientMode));
-            exitClientBtn.addEventListener("click", () => setClientMode(false));
-
-            // Share Client Link Button
-            document.getElementById("share-client-link-btn").addEventListener("click", () => {
-                const dummyUrl = window.location.href.split('?')[0] + "?view=client";
-                const el = document.createElement('textarea');
-                el.value = dummyUrl;
-                document.body.appendChild(el);
-                el.select();
-                document.execCommand('copy');
-                document.body.removeChild(el);
-
-                alert("Client Link Copied to Clipboard!\n\nSend this URL to your clients. They will open in secure Client Review Mode.");
-            });
-
-            // Profile Modal Controls
-            const profModal = document.getElementById("profile-modal");
-            document.getElementById("open-profile-btn").addEventListener("click", () => {
-                document.getElementById("prof-name").value = profileState.name;
-                document.getElementById("prof-badge").value = profileState.badge;
-                document.getElementById("prof-subtitle").value = profileState.subtitle;
-                document.getElementById("prof-bio").value = profileState.bio;
-                document.getElementById("prof-whatsapp").value = profileState.whatsapp;
-                document.getElementById("prof-availability").value = profileState.availability;
-                document.getElementById("prof-software").value = profileState.software.join(", ");
-                profModal.classList.remove("hidden");
-            });
-            document.getElementById("close-profile-btn").addEventListener("click", () => profModal.classList.add("hidden"));
-
-            document.getElementById("profile-form").addEventListener("submit", (e) => {
-                e.preventDefault();
-                profileState.name = document.getElementById("prof-name").value;
-                profileState.badge = document.getElementById("prof-badge").value;
-                profileState.subtitle = document.getElementById("prof-subtitle").value;
-                profileState.bio = document.getElementById("prof-bio").value;
-                profileState.whatsapp = document.getElementById("prof-whatsapp").value.replace(/[^0-9]/g, '');
-                profileState.availability = document.getElementById("prof-availability").value;
+            filtered.forEach(work => {
+                const card = document.createElement('div');
+                card.className = 'glass-card rounded-2xl overflow-hidden border border-zinc-800 flex flex-col justify-between group hover:border-zinc-700 transition duration-300';
                 
-                const softStr = document.getElementById("prof-software").value;
-                profileState.software = softStr ? softStr.split(",").map(s => s.trim()) : [];
-
-                renderProfile();
-                profModal.classList.add("hidden");
-            });
-
-            // Work Builder Modal
-            const builderModal = document.getElementById("builder-modal");
-            document.getElementById("open-builder-btn").addEventListener("click", () => builderModal.classList.remove("hidden"));
-            document.getElementById("close-builder-btn").addEventListener("click", () => builderModal.classList.add("hidden"));
-
-            let uploadedVideoData = "";
-            document.getElementById("item-file-input").addEventListener("change", (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    document.getElementById("file-chosen-name").textContent = `Selected: ${file.name}`;
-                    const reader = new FileReader();
-                    reader.onload = (evt) => uploadedVideoData = evt.target.result;
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            document.getElementById("portfolio-form").addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const title = document.getElementById("item-title").value;
-                const category = document.getElementById("item-category").value;
-                const aspect = document.getElementById("item-aspect").value;
-                const urlInput = document.getElementById("item-url-input").value;
-                const software = document.getElementById("item-software").value || "Premiere Pro";
-                const description = document.getElementById("item-description").value;
-
-                const itemId = "video-" + Date.now();
-                let finalUrl = urlInput;
-
-                if (uploadedVideoData) {
-                    await saveMediaBlob(itemId, uploadedVideoData);
-                    finalUrl = uploadedVideoData;
-                } else if (!finalUrl) {
-                    finalUrl = "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80";
+                let mediaElement = '';
+                if (work.mediaUrl) {
+                    if (work.mediaType && work.mediaType.startsWith('video')) {
+                        mediaElement = `<video src="${work.mediaUrl}" controls class="w-full h-56 object-cover bg-black"></video>`;
+                    } else if (work.mediaType && work.mediaType.startsWith('image')) {
+                        mediaElement = `<img src="${work.mediaUrl}" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500">`;
+                    } else if (work.mediaUrl.includes('youtube.com') || work.mediaUrl.includes('youtu.be')) {
+                        let embedUrl = work.mediaUrl.replace('watch?v=', 'embed/');
+                        mediaElement = `<iframe src="${embedUrl}" class="w-full h-56" frameborder="0" allowfullscreen></iframe>`;
+                    } else {
+                        mediaElement = `<div class="w-full h-56 bg-dark-800 flex flex-col items-center justify-center p-4 text-center"><i class="fa-solid fa-file-lines text-3xl text-zinc-500 mb-2"></i><span class="text-xs text-zinc-300 font-bold">${work.title}</span><a href="${work.mediaUrl}" target="_blank" class="mt-2 text-[10px] bg-zinc-700 px-3 py-1.5 rounded-lg text-white">View File</a></div>`;
+                    }
+                } else {
+                    mediaElement = `<div class="w-full h-56 bg-dark-800 flex items-center justify-center text-zinc-600 font-bold uppercase text-xs tracking-widest">No Media Attached</div>`;
                 }
 
-                portfolioItems.unshift({
-                    id: itemId, title, category, aspect, url: finalUrl, software, description, feedbacks: []
-                });
-
-                renderShowcase();
-                builderModal.classList.add("hidden");
-                document.getElementById("portfolio-form").reset();
-                uploadedVideoData = "";
-                document.getElementById("file-chosen-name").textContent = "";
-            });
-
-            // Feedback Modal Controls
-            const feedbackModal = document.getElementById("feedback-modal");
-            document.getElementById("close-feedback-btn").addEventListener("click", () => feedbackModal.classList.add("hidden"));
-
-            document.getElementById("feedback-form").addEventListener("submit", (e) => {
-                e.preventDefault();
-                const itemId = document.getElementById("feedback-item-id").value;
-                const clientName = document.getElementById("fb-client-name").value;
-                const rating = document.getElementById("fb-rating").value;
-                const notes = document.getElementById("fb-notes").value;
-
-                const item = portfolioItems.find(i => i.id === itemId);
-                if (item) {
-                    if (!item.feedbacks) item.feedbacks = [];
-                    item.feedbacks.unshift({
-                        clientName,
-                        rating,
-                        notes,
-                        date: new Date().toLocaleDateString()
-                    });
-                }
-
-                alert("Feedback & Change brief submitted to the editor successfully!");
-                feedbackModal.classList.add("hidden");
-                document.getElementById("feedback-form").reset();
-                renderShowcase();
-            });
-
-            // Category Filter
-            document.querySelectorAll(".cat-filter-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    document.querySelectorAll(".cat-filter-btn").forEach(b => {
-                        b.classList.remove("bg-white", "text-black");
-                        b.classList.add("glass-panel", "text-zinc-400");
-                    });
-                    btn.classList.add("bg-white", "text-black");
-                    btn.classList.remove("glass-panel", "text-zinc-400");
-                    activeCategory = btn.getAttribute("data-category");
-                    renderShowcase();
-                });
-            });
-
-            // Client Contact Form
-            document.getElementById("client-contact-form").addEventListener("submit", (e) => {
-                e.preventDefault();
-                alert("Project Brief Submitted! The video editor will get back to you shortly.");
-                document.getElementById("client-contact-form").reset();
-            });
-
-            // Reset Data
-            document.getElementById("reset-data-btn").addEventListener("click", () => {
-                if (confirm("Reset all custom portfolio items?")) {
-                    portfolioItems = [];
-                    renderShowcase();
-                }
-            });
-        }
-
-        function renderProfile() {
-            document.getElementById("hero-editor-name").innerHTML = escapeHtml(profileState.name);
-            document.getElementById("hero-title-sub").textContent = profileState.subtitle;
-            document.getElementById("hero-bio").textContent = profileState.bio;
-            document.getElementById("editor-badge").textContent = profileState.badge;
-            document.getElementById("display-availability").textContent = profileState.availability;
-
-            // WhatsApp link
-            const waBtn = document.getElementById("whatsapp-link");
-            const cleanWa = profileState.whatsapp || "919999999999";
-            const msg = encodeURIComponent(`Hi ${profileState.name}, I reviewed your GANGSTAFOLIO portfolio and want to discuss a video editing project!`);
-            waBtn.href = `https://wa.me/${cleanWa}?text=${msg}`;
-
-            // Software Badges
-            const softContainer = document.getElementById("software-tags");
-            softContainer.innerHTML = profileState.software.map(s => `
-                <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-zinc-800/80 text-zinc-300 border border-white/10 flex items-center gap-1.5">
-                    <i data-lucide="sparkles" class="w-3 h-3 text-white"></i> ${escapeHtml(s)}
-                </span>
-            `).join("");
-
-            lucide.createIcons();
-        }
-
-        function renderShowcase() {
-            const grid = document.getElementById("portfolio-grid");
-            const counter = document.getElementById("items-counter");
-
-            const filtered = portfolioItems.filter(i => activeCategory === "all" || i.category === activeCategory);
-            counter.textContent = `${filtered.length} Works`;
-
-            grid.innerHTML = filtered.map(item => `
-                <div class="glass-panel glass-panel-hover rounded-3xl overflow-hidden flex flex-col relative group border border-white/10">
-                    <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-white/10 text-white border border-white/20">
-                                    ${item.category} (${item.aspect || '16:9'})
-                                </span>
-                                ${!isClientMode ? `
-                                    <button onclick="deleteWork('${item.id}')" class="builder-only text-zinc-400 hover:text-red-400 transition-colors">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
-                                ` : ''}
+                card.innerHTML = `
+                    <div>
+                        <div class="relative overflow-hidden">
+                            ${mediaElement}
+                            <span class="absolute top-3 left-3 bg-black/70 backdrop-blur-md text-[10px] font-bold text-white uppercase px-2.5 py-1 rounded-lg border border-white/10">${work.category}</span>
+                        </div>
+                        <div class="p-5 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-base font-bold text-white">${work.title}</h3>
+                                ${work.client ? `<span class="text-[11px] text-zinc-400 font-medium">${work.client}</span>` : ''}
                             </div>
-
-                            <h3 class="text-lg font-bold text-white">${escapeHtml(item.title)}</h3>
-                            
-                            ${item.software ? `
-                                <div class="text-[11px] font-mono text-zinc-400 mt-1 flex items-center gap-1">
-                                    <i data-lucide="cpu" class="w-3 h-3 text-zinc-400"></i> ${escapeHtml(item.software)}
-                                </div>
-                            ` : ''}
-
-                            <p class="text-xs text-zinc-400 font-light mt-3 leading-relaxed">${escapeHtml(item.description)}</p>
-                        </div>
-
-                        <!-- Media Display (Video Player or Thumbnail) -->
-                        <div class="mt-4 rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 ${item.aspect === '9:16' ? 'aspect-[9/16] max-w-[240px] mx-auto' : 'aspect-video'} relative">
-                            ${item.url.endsWith('.mp4') || item.url.startsWith('data:video') ? `
-                                <video src="${item.url}" controls class="w-full h-full object-cover"></video>
-                            ` : `
-                                <img src="${item.url}" alt="${item.title}" class="w-full h-full object-cover">
-                            `}
-                        </div>
-
-                        <!-- FEEDBACK & RATING AREA -->
-                        <div class="pt-3 border-t border-white/10 space-y-3">
-                            <button onclick="openFeedbackModal('${item.id}', '${escapeHtml(item.title)}')" class="w-full py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center justify-center gap-2 transition-all">
-                                <i data-lucide="message-square" class="w-4 h-4"></i>
-                                <span>Rate Work & Request Changes</span>
-                            </button>
-
-                            ${item.feedbacks && item.feedbacks.length > 0 ? `
-                                <div class="space-y-2 max-h-36 overflow-y-auto pr-1">
-                                    <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Client Reviews & Briefs:</span>
-                                    ${item.feedbacks.map(f => `
-                                        <div class="p-2.5 rounded-xl bg-zinc-900/90 border border-white/10 text-xs">
-                                            <div class="flex items-center justify-between text-white font-semibold">
-                                                <span>${escapeHtml(f.clientName)}</span>
-                                                <span class="text-amber-400 font-bold">${'⭐'.repeat(parseInt(f.rating))}</span>
-                                            </div>
-                                            <p class="text-[11px] text-zinc-300 mt-1 italic font-light">"${escapeHtml(f.notes)}"</p>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
+                            <p class="text-xs text-zinc-400 line-clamp-2">${work.desc || 'No description provided.'}</p>
+                            ${work.software ? `<div class="flex flex-wrap gap-1 pt-1"><span class="bg-dark-800 border border-zinc-700 text-zinc-300 text-[10px] px-2 py-0.5 rounded">${work.software}</span></div>` : ''}
                         </div>
                     </div>
-                </div>
-            `).join("");
 
-            lucide.createIcons();
+                    <div class="p-5 pt-0 space-y-3">
+                        <!-- Rating & Review Section for Clients -->
+                        <div class="bg-dark-800/60 border border-zinc-800 rounded-xl p-3 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Client Rating</span>
+                                <div class="flex items-center space-x-1" id="stars-${work.id}">
+                                    ${renderStarRating(work.id, work.rating || 0)}
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <textarea id="brief-${work.id}" placeholder="Leave revision brief or feedback..." class="w-full bg-dark-900 border border-zinc-700 rounded-lg p-2 text-xs text-zinc-200 focus:outline-none resize-none">${work.brief || ''}</textarea>
+                                <button onclick="submitClientBrief('${work.id}')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white py-1.5 rounded-lg text-[11px] font-semibold transition">Submit Brief / Feedback</button>
+                            </div>
+                        </div>
+
+                        <!-- Delete Button (Editor Only) -->
+                        <div id="delete-btn-container-${work.id}" class="${isClientMode ? 'hidden' : 'flex'} justify-end">
+                            <button onclick="deleteWork('${work.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-semibold flex items-center space-x-1">
+                                <i class="fa-solid fa-trash"></i>
+                                <span>Delete Project</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
         }
 
-        function openFeedbackModal(id, title) {
-            document.getElementById("feedback-item-id").value = id;
-            document.getElementById("feedback-project-title").textContent = title;
-            document.getElementById("feedback-modal").classList.remove("hidden");
+        function renderStarRating(workId, currentRating) {
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                const color = i <= currentRating ? 'text-amber-400' : 'text-zinc-600';
+                html += `<i class="fa-solid fa-star cursor-pointer text-xs ${color}" onclick="rateWork('${workId}', ${i})"></i>`;
+            }
+            return html;
         }
 
-        function deleteWork(id) {
-            portfolioItems = portfolioItems.filter(i => i.id !== id);
-            deleteMediaBlob(id);
-            renderShowcase();
+        async function rateWork(workId, rating) {
+            const work = works.find(w => w.id === workId);
+            if (work) {
+                work.rating = rating;
+                if (isFirebaseConnected) {
+                    const { doc, updateDoc } = window.firebaseModules;
+                    await updateDoc(doc(db, "works", workId), { rating });
+                } else {
+                    saveLocalFallback();
+                }
+                renderWorks();
+            }
         }
 
-        function escapeHtml(str) {
-            return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+        async function submitClientBrief(workId) {
+            const briefText = document.getElementById(`brief-${workId}`).value;
+            const work = works.find(w => w.id === workId);
+            if (work) {
+                work.brief = briefText;
+                if (isFirebaseConnected) {
+                    const { doc, updateDoc } = window.firebaseModules;
+                    await updateDoc(doc(db, "works", workId), { brief: briefText });
+                } else {
+                    saveLocalFallback();
+                }
+                alert('Revision brief submitted successfully to the editor!');
+                renderWorks();
+            }
+        }
+
+        function filterCategory(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.className = "category-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 hover:text-white transition";
+            });
+            event.target.className = "category-btn active px-4 py-2 rounded-xl text-xs font-bold bg-white text-zinc-900 transition shadow";
+            renderWorks();
+        }
+
+        // ================= ADD WORK LOGIC =================
+        function openAddModal() { document.getElementById('addContentModal').classList.remove('hidden'); document.getElementById('addContentModal').classList.add('flex'); }
+        function closeAddModal() { document.getElementById('addContentModal').classList.add('hidden'); document.getElementById('addContentModal').classList.remove('flex'); }
+
+        async function handleSaveContent(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveWorkBtn');
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i><span>Uploading to Cloud...</span>`;
+
+            const title = document.getElementById('workTitle').value;
+            const category = document.getElementById('workCategory').value;
+            const client = document.getElementById('workClient').value;
+            const software = document.getElementById('workSoftware').value;
+            const desc = document.getElementById('workDesc').value;
+            let mediaUrl = document.getElementById('workUrl').value;
+            let mediaType = '';
+
+            const fileInput = document.getElementById('workFile');
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                mediaType = file.type;
+                if (isFirebaseConnected && storage) {
+                    const { ref, uploadBytes, getDownloadURL } = window.firebaseModules;
+                    const storageRef = ref(storage, `media/${Date.now()}_${file.name}`);
+                    const snapshot = await uploadBytes(storageRef, file);
+                    mediaUrl = await getDownloadURL(snapshot.ref);
+                } else {
+                    // Fallback to base64 if firebase storage not configured
+                    mediaUrl = await toBase64(file);
+                }
+            }
+
+            const newWork = {
+                id: 'work_' + Date.now(),
+                title, category, client, software, desc, mediaUrl, mediaType, rating: 0, brief: ''
+            };
+
+            works.unshift(newWork);
+
+            if (isFirebaseConnected) {
+                const { addDoc, collection } = window.firebaseModules;
+                await addDoc(collection(db, "works"), newWork);
+            } else {
+                saveLocalFallback();
+            }
+
+            btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i><span>Upload & Save to Cloud</span>`;
+            closeAddModal();
+            document.getElementById('addContentForm').reset();
+            renderWorks();
+        }
+
+        async function deleteWork(id) {
+            if (confirm('Are you sure you want to delete this work?')) {
+                works = works.filter(w => w.id !== id);
+                if (isFirebaseConnected) {
+                    const { doc, deleteDoc } = window.firebaseModules;
+                    await deleteDoc(doc(db, "works", id));
+                } else {
+                    saveLocalFallback();
+                }
+                renderWorks();
+            }
+        }
+
+        // ================= PROFILE & SETTINGS =================
+        function updateProfileUI() {
+            document.getElementById('profileName').innerText = profileData.name;
+            document.getElementById('navBrandName').innerText = profileData.name;
+            document.getElementById('profileTagline').innerText = profileData.tagline;
+            document.getElementById('profileBadge').innerText = profileData.badge;
+            if (profileData.dpUrl) {
+                document.getElementById('profileDpImg').src = profileData.dpUrl;
+            }
+        }
+
+        function openEditProfileModal() {
+            document.getElementById('editName').value = profileData.name;
+            document.getElementById('editTagline').value = profileData.tagline;
+            document.getElementById('editBadge').value = profileData.badge;
+            document.getElementById('editWhatsapp').value = profileData.whatsapp;
+            document.getElementById('editProfileModal').classList.remove('hidden');
+            document.getElementById('editProfileModal').classList.add('flex');
+        }
+        function closeEditProfileModal() { document.getElementById('editProfileModal').classList.add('hidden'); document.getElementById('editProfileModal').classList.remove('flex'); }
+
+        async function handleSaveProfile(e) {
+            e.preventDefault();
+            profileData.name = document.getElementById('editName').value;
+            profileData.tagline = document.getElementById('editTagline').value;
+            profileData.badge = document.getElementById('editBadge').value;
+            profileData.whatsapp = document.getElementById('editWhatsapp').value;
+
+            const dpFile = document.getElementById('editDpFile');
+            if (dpFile.files.length > 0) {
+                const file = dpFile.files[0];
+                if (isFirebaseConnected && storage) {
+                    const { ref, uploadBytes, getDownloadURL } = window.firebaseModules;
+                    const storageRef = ref(storage, `dp/${Date.now()}_${file.name}`);
+                    const snapshot = await uploadBytes(storageRef, file);
+                    profileData.dpUrl = await getDownloadURL(snapshot.ref);
+                } else {
+                    profileData.dpUrl = await toBase64(file);
+                }
+            }
+
+            if (isFirebaseConnected) {
+                // Save profile to Firestore
+                // Implementation simplified
+            } else {
+                saveLocalFallback();
+            }
+
+            updateProfileUI();
+            closeEditProfileModal();
+        }
+
+        function openWhatsAppChat() {
+            const phone = profileData.whatsapp || "919876543210";
+            const text = encodeURIComponent("Hey Karrtik, I reviewed your portfolio on GANGSTAFOLIO and I have a video editing project for you.");
+            window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        }
+
+        // ================= CLIENT MODE TOGGLE =================
+        function toggleClientMode() {
+            isClientMode = !isClientMode;
+            const btnText = document.getElementById('modeToggleText');
+            const addBtn = document.getElementById('addContentBtn');
+            const editProfileBtn = document.getElementById('editProfileBtn');
+
+            if (isClientMode) {
+                btnText.innerText = "Exit Client View (Editor Mode)";
+                addBtn.classList.add('hidden');
+                editProfileBtn.classList.add('hidden');
+                alert("Client View Enabled: Editing buttons are now hidden. Clients can browse, rate, and submit revision briefs.");
+            } else {
+                btnText.innerText = "Preview Client View";
+                addBtn.classList.remove('hidden');
+                editProfileBtn.classList.remove('hidden');
+            }
+            renderWorks();
+        }
+
+        // ================= SHARE MODAL =================
+        function openShareModal() {
+            document.getElementById('shareUrlInput').value = window.location.href;
+            document.getElementById('shareModal').classList.remove('hidden');
+            document.getElementById('shareModal').classList.add('flex');
+        }
+        function closeShareModal() { document.getElementById('shareModal').classList.add('hidden'); document.getElementById('shareModal').classList.remove('flex'); }
+        function copyShareLink() {
+            const input = document.getElementById('shareUrlInput');
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            alert('Client showcase link copied to clipboard!');
+        }
+
+        // ================= FONT & AUDIO =================
+        function changeGlobalFont(fontFamily) {
+            document.body.style.fontFamily = fontFamily;
+        }
+
+        let isAudioPlaying = false;
+        function toggleAudioPlayer() {
+            const audio = document.getElementById('bgAudio');
+            const icon = document.getElementById('audioIcon');
+            const label = document.getElementById('audioLabel');
+
+            if (!isAudioPlaying) {
+                audio.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+                audio.play().catch(() => {});
+                isAudioPlaying = true;
+                icon.className = "fa-solid fa-volume-high text-emerald-400 animate-pulse";
+                label.innerText = "Audio Playing";
+            } else {
+                audio.pause();
+                isAudioPlaying = false;
+                icon.className = "fa-solid fa-music text-zinc-400";
+                label.innerText = "Studio Audio";
+            }
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
         }
     </script>
 </body>
